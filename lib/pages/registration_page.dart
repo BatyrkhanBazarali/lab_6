@@ -17,7 +17,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-  // Валидация для имени
+  // Validation for full name
   String? _validateFullName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Full Name cannot be empty';
@@ -27,7 +27,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-  // Валидация для email
+  // Validation for email
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email cannot be empty';
@@ -37,7 +37,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-  // Валидация для телефона
+  // Validation for phone number
   String? _validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone Number cannot be empty';
@@ -47,7 +47,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-  // Валидация для пароля
+  // Validation for password
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password cannot be empty';
@@ -59,7 +59,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-  // Валидация для подтверждения пароля
+  // Validation for confirm password
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please confirm your password';
@@ -69,37 +69,51 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
-  void _showSuccessMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Успешно зарегистрировался!',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
+  // Show profile information dialog
+  void _showProfileDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text(
+            'Profile Information',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Full Name: ${_fullNameController.text}'),
+              Text('Phone Number: ${_phoneController.text}'),
+              Text('Email: ${_emailController.text}'),
+              Text('Password: ${_passwordController.text}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  void _navigateToProfilePage() {
-    _showSuccessMessage(); // Показываем сообщение перед переходом
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfilePage(
-            fullName: _fullNameController.text,
-            phoneNumber: _phoneController.text,
-            email: _emailController.text,
-          ),
-        ),
-      );
-    });
+  // Show success message
+  void _showSuccessMessage() {
+    final snackBar = SnackBar(
+      content: const Text(
+        'Successfully registered!',
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.green,
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -144,39 +158,61 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 16.0),
+                    // Full Name Field
                     TextFormField(
                       controller: _fullNameController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Full Name *',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.person),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _fullNameController.clear();
+                          },
+                        ),
+                        border: const OutlineInputBorder(),
                       ),
                       validator: _validateFullName,
                     ),
                     const SizedBox(height: 16.0),
+                    // Phone Number Field
                     TextFormField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Phone Number *',
-                        prefixIcon: Icon(Icons.phone),
+                        prefixIcon: const Icon(Icons.phone),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _phoneController.clear();
+                          },
+                        ),
                         hintText: 'Phone format: +XXX...',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                       ),
                       validator: _validatePhoneNumber,
                     ),
                     const SizedBox(height: 16.0),
+                    // Email Address Field
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Email Address *',
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.email),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _emailController.clear();
+                          },
+                        ),
+                        border: const OutlineInputBorder(),
                       ),
                       validator: _validateEmail,
                     ),
                     const SizedBox(height: 16.0),
+                    // Password Field
                     TextFormField(
                       controller: _passwordController,
                       obscureText: !_isPasswordVisible,
@@ -200,6 +236,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       validator: _validatePassword,
                     ),
                     const SizedBox(height: 16.0),
+                    // Confirm Password Field
                     TextFormField(
                       controller: _confirmPasswordController,
                       obscureText: !_isConfirmPasswordVisible,
@@ -238,7 +275,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            _navigateToProfilePage();
+                            _showSuccessMessage();
+                            _showProfileDialog();
                           }
                         },
                         child: const Text(
@@ -250,60 +288,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ],
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  final String fullName;
-  final String phoneNumber;
-  final String email;
-
-  const ProfilePage({
-    Key? key,
-    required this.fullName,
-    required this.phoneNumber,
-    required this.email,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: const Color(0xFF2196F3),
-      ),
-      body: Center(
-        child: Card(
-          margin: const EdgeInsets.all(16.0),
-          elevation: 8.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Full Name: $fullName',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  'Phone Number: $phoneNumber',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  'Email: $email',
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ],
             ),
           ),
         ),
